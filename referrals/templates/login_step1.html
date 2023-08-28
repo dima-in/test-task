@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Step 1</title>
+</head>
+<body>
+    <h1>Login Step 1</h1>
+    <form action="{% url 'authenticate_user' %}" method="post">
+        {% csrf_token %}
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" placeholder="format: +99999999999"required pattern="^\+?7?\d{9,15}$">
+        <br>
+        <label for="invite_code">Invite Code (optional):</label>
+        <input type="text" id="invite_code" name="invite_code">
+        <br>
+        <button type="submit">Send Verification Code</button>
+    </form>
+</body>
+</html>

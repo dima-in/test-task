@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +77,12 @@ WSGI_APPLICATION = 'referral_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'referrals',        # Имя базы данных
+        'USER': 'referralsuser',    # Имя пользователя PostgreSQL
+        'PASSWORD': 'referralspassword',  # Пароль пользователя PostgreSQL
+        'HOST': 'localhost',   # Хост для соединения с базой данных (может быть именем контейнера)
+        'PORT': '5432',        # Порт PostgreSQL (здесь используется порт машины)
     }
 }
 

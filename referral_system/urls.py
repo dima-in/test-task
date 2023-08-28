@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from referrals.views import index
+from referrals.views import authenticate_user, verify_activation_code, get_user_profile, entry_authorization_page
 
 urlpatterns = [
-    path('referral_system/', index),
+    path('entry/', entry_authorization_page, name='entry_authorization_page'),
+    path('authenticate_user/', authenticate_user, name='authenticate_user'),
+    path('verify_activation_code/', verify_activation_code, name='verify_activation_code'),
+    path('profile/', get_user_profile, name='profile/'),
     path('admin/', admin.site.urls),
 ]

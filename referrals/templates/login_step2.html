@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Step 2</title>
+</head>
+<body>
+    <h1>Login Step 2</h1>
+    <form action="{% url 'verify_activation_code' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="phone_number" value="{{ phone_number }}">
+        <label for="authorization_code">Authorization Code:</label>
+        <input type="text" id="authorization_code" name="authorization_code" required>
+        <br>
+        <button type="submit">Authorize</button>
+    </form>
+</body>
+</html>
