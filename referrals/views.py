@@ -2,63 +2,59 @@ import random
 import string
 import time
 
-from django.core.validators import RegexValidator
-from django.shortcuts import get_object_or_404, render
-from rest_framework import viewsets, status
+from django.shortcuts import render
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 from referrals.models import UserProfile
 
 
 @api_view(['GET'])
 def entry_authorization_page(request):
+    """стартовая страница авторизации"""
     return render(request, 'login_step1.html')
+
 
 @api_view(['GET'])
 def entry_get_profile(request):
+    """стартовая страница профиля"""
     return render(request, 'profile.html')
 
 
 @api_view(['POST'])
 def authenticate_user(request):
-    # получаем номер телефона, инвайт из формы
+    """получаем номер телефона и инвайт из формы"""
     phone_number = request.data.get('phone_number')
     invite_code = request.data.get('invite_code')
-    # передаем в request.session
+    """передаем номер телефона и инвайт в request.session"""
     request.session['phone_number'] = phone_number
     request.session['invite_code'] = invite_code
     request.session.save()
     return render(request, 'login_step2.html')
 
 
-
 @api_view(['POST'])
 def verify_activation_code(request):
     activation_code = request.data.get('authorization_code')
-    print(f'activation_code = {activation_code}')
+    """получаем номер телефона и инвайт из текущей сессии"""
     phone_number = request.session.get('phone_number')
     invite_code = request.session.get('invite_code')
 
-    print(f'phone_number, invite_code в verify_activation_code = {phone_number, invite_code}')
     if activation_code:
-        print(f'activation_code1 = {activation_code}')
         time.sleep(2)
         '''
         если пользователь с указанным номером сущесвует,
-        возвращается кртеж с user и create = False
+        возвращается кортеж с user, create = False
         если не существует, то user создается, created = True
         '''
         user, created = UserProfile.objects.get_or_create(phone_number=phone_number)
 
         invite_code_exist = UserProfile.objects.filter(invite_code=invite_code).exists()
-        print(f'invite_code_exist is {invite_code_exist}')
         if created:
             if invite_code:
                 if invite_code_exist:
                     '''
                     если введенный код принадлежит другому user:
-                    записать инвайт-код новому user
+                    сохранить инвайт-код новому user
                     '''
                     user.phone_number = phone_number
                     user.invite_code = invite_code
@@ -71,16 +67,18 @@ def verify_activation_code(request):
                         'used_foreign_invite': user.used_foreign_invite,
                         # 'referral_phone_numbers': user.referral_phone_numbers,
                     }
+                    """
+                    после удачного создания пользователя
+                    вернуть профиль
+                    """
                     return render(request, 'profile.html', context)
                 else:
                     return render(request, 'error_message.html',
-                                  {'message': f'Invalid invite_code: {invite_code} or phone_number: {phone_number}'})
-
-
+                                  {'message': f'Invalid invite_code: {invite_code}'})
             else:
                 '''
                 если инвайт-код не вводился:
-                сгенерировать и присвоить 
+                сгенерировать и присвоить user
                 '''
                 user.phone_number = phone_number
                 user.invite_code = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -95,6 +93,10 @@ def verify_activation_code(request):
                 return render(request, 'profile.html', context)
 
         else:
+            """
+            Если пользователь с указанным номером существует:
+            вернуть профиль 
+            """
             context = {
                 'message': 'authorized',
                 'phone_number': user.phone_number,
@@ -103,12 +105,18 @@ def verify_activation_code(request):
             }
             return render(request, 'profile.html', context)
     else:
+        """если код """
         return render(request, 'error_message.html',
-                      {'message': f'activation_code is {activation_code}'})
+                      {'message': f'Invalid activation_code: {activation_code}'})
 
 
 @api_view(['POST'])
 def get_user_profile(request):
+    """
+    Получение профиля пользователя по указанному номеру телефона.
+    :param request: содержит номер телефона пользователья
+    :return: профиль пользователя по указанному номеру телефона
+    """
     phone_number = request.data.get('phone_number')
 
     try:
@@ -129,5 +137,3 @@ def get_user_profile(request):
     except UserProfile.DoesNotExist:
         error_message = "User with the provided phone number was not found."
         return render(request, 'profile.html', {'message': error_message})
-
-#           {"phone_number":"+79263602259"}    9NG1A4  I2HPSY +79994447773

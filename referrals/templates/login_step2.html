@@ -11,7 +11,7 @@
         {% csrf_token %}
         <input type="hidden" name="phone_number" value="{{ phone_number }}">
         <label for="authorization_code">Authorization Code:</label>
-        <input type="text" id="authorization_code" name="authorization_code" required>
+        <input type="text" id="authorization_code" name="authorization_code" required pattern="\d{4}">
         <br>
         <button type="submit">Authorize</button>
     </form>

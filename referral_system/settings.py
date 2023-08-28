@@ -88,6 +88,7 @@ DATABASES = {
 
 
 # Password validation
+# docker run --name my_postgres_container -e POSTGRES_PASSWORD=referralspassword -p 5432:5432 -d postgres
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
